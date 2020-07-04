@@ -1,0 +1,76 @@
+import numpy as num
+import matplotlib as plt
+import pandas as pd
+
+df=pd.read_csv('/content/sample_data/datasets_13214_17927_Churn_Modelling.csv')
+
+x=df.iloc[:,3:13]
+y=df.iloc[:,13]
+
+df.head(5)
+
+geography=pd.get_dummies(x['Geography'],drop_first=True)
+
+gender=pd.get_dummies(x['Gender'],drop_first=True)
+
+x=pd.concat((x,geography,gender),axis=1)
+
+x
+
+x=x.drop(['Geography','Gender'],axis=1)
+
+x
+
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(x,y,test_size=.2,random_state=0)
+
+from sklearn.preprocessing import StandardScaler
+sc=StandardScaler()
+X_train=sc.fit_transform(X_train)
+X_test=sc.transform(X_test)
+
+X_test
+
+import keras
+from keras.models import Sequential #creating envornment
+from keras.layers import Dense # for hidden layer
+from keras.layers import Dropout
+
+classifier=Sequential()
+
+classifier.add(Dense(units=10,kernel_initializer='he_normal',activation='relu',input_dim=11))
+classifier.add(Dropout(.3))
+
+classifier.add(Dense(units=20,kernel_initializer='he_normal',activation='relu'))
+classifier.add(Dropout(.4))
+classifier.add(Dense(units=15,kernel_initializer='he_normal',activation='relu'))
+classifier.add(Dropout(.3))
+
+classifier.add(Dense(units=1,kernel_initializer='glorot_uniform',activation='sigmoid',input_dim=11))
+
+classifier.summary()
+
+classifier.compile(optimizer='adam' ,loss='binary_crossentropy',metrics=['accuracy'])
+
+model_history=classifier.fit(X_train,y_train,validation_split=.33,batch_size=10,nb_epoch=100)
+
+y_predict=classifier.predict(X_test)
+
+y_predict=(y_predict>.5)
+
+from sklearn.metrics import confusion_matrix,accuracy_score
+
+cm=confusion_matrix(y_test,y_predict)
+
+cm
+
+score=accuracy_score(y_predict,y_test)
+
+score
+
+score=accuracy_score(y_predict,y_test)
+score
+
+score=accuracy_score(y_predict,y_test)
+score
+
